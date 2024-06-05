@@ -11,6 +11,7 @@ public class LoginGUI {
 
     public static void main(String[] args) {
         try {
+            ensureUserFileExists();
             decryptUserFile();
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,6 +134,17 @@ public class LoginGUI {
         });
 
         frame.setVisible(true);
+    }
+
+    /**
+     * Užtikrina, kad vartotojo failas egzistuoja. Jei ne, sukuria naują failą.
+     * @throws IOException Jei įvyksta klaida kuriant failą
+     */
+    private static void ensureUserFileExists() throws IOException {
+        File file = new File(USER_FILE);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
     }
 
     /**
