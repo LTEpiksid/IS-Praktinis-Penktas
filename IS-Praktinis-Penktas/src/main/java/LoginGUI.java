@@ -18,8 +18,8 @@ public class LoginGUI {
         }
 
         Frame frame = new Frame("Login/Register");
-        frame.setSize(400, 300);
-        frame.setLayout(new FlowLayout());
+        frame.setSize(400, 200);
+        frame.setLayout(new GridBagLayout());
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 try {
@@ -30,6 +30,10 @@ public class LoginGUI {
                 System.exit(0);
             }
         });
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
 
         // Centruoja langą
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -44,15 +48,30 @@ public class LoginGUI {
 
         Button loginButton = new Button("Login");
         Button registerButton = new Button("Register");
-        Button searchButton = new Button("Search Password");
 
-        frame.add(userLabel);
-        frame.add(userText);
-        frame.add(passwordLabel);
-        frame.add(passwordText);
-        frame.add(loginButton);
-        frame.add(registerButton);
-        frame.add(searchButton);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        frame.add(userLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        frame.add(userText, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        frame.add(passwordLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        frame.add(passwordText, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        frame.add(loginButton, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        frame.add(registerButton, gbc);
 
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -75,53 +94,86 @@ public class LoginGUI {
 
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String username = userText.getText();
-                String password = passwordText.getText();
-                if (username.isEmpty() || password.isEmpty()) {
-                    showMessage("Username and password cannot be empty");
-                    return;
-                }
-                try {
-                    if (isUsernameTaken(username)) {
-                        showMessage("Username is already taken");
-                        return;
-                    }
-                    register(username, password);
-                    showMessage("User registered successfully!");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    showMessage("An error occurred");
-                }
-            }
-        });
+                Frame registerFrame = new Frame("Register");
+                registerFrame.setSize(400, 300);
+                registerFrame.setLayout(new GridBagLayout());
 
-        searchButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Frame searchFrame = new Frame("Search Password");
-                searchFrame.setSize(400, 200);
-                searchFrame.setLayout(new FlowLayout());
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.insets = new Insets(5, 5, 5, 5);
+                gbc.anchor = GridBagConstraints.WEST;
 
-                // Centruoja paieškos langą
-                searchFrame.setLocation(screenSize.width / 2 - searchFrame.getSize().width / 2, screenSize.height / 2 - searchFrame.getSize().height / 2);
+                // Centruoja registracijos langą
+                registerFrame.setLocation(screenSize.width / 2 - registerFrame.getSize().width / 2, screenSize.height / 2 - registerFrame.getSize().height / 2);
 
-                Label titleLabel = new Label("Title:");
-                TextField titleText = new TextField(20);
-                Button searchSubmitButton = new Button("Search");
+                Label regUserLabel = new Label("Username:");
+                TextField regUserText = new TextField(20);
 
-                searchFrame.add(titleLabel);
-                searchFrame.add(titleText);
-                searchFrame.add(searchSubmitButton);
+                Label regPasswordLabel = new Label("Password:");
+                TextField regPasswordText = new TextField(20);
+                regPasswordText.setEchoChar('*');
 
-                searchSubmitButton.addActionListener(new ActionListener() {
+                Label urlLabel = new Label("URL/Application:");
+                TextField urlText = new TextField(20);
+
+                Label commentLabel = new Label("Comment:");
+                TextField commentText = new TextField(20);
+
+                Button regSaveButton = new Button("Save");
+
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                registerFrame.add(regUserLabel, gbc);
+
+                gbc.gridx = 1;
+                gbc.gridy = 0;
+                registerFrame.add(regUserText, gbc);
+
+                gbc.gridx = 0;
+                gbc.gridy = 1;
+                registerFrame.add(regPasswordLabel, gbc);
+
+                gbc.gridx = 1;
+                gbc.gridy = 1;
+                registerFrame.add(regPasswordText, gbc);
+
+                gbc.gridx = 0;
+                gbc.gridy = 2;
+                registerFrame.add(urlLabel, gbc);
+
+                gbc.gridx = 1;
+                gbc.gridy = 2;
+                registerFrame.add(urlText, gbc);
+
+                gbc.gridx = 0;
+                gbc.gridy = 3;
+                registerFrame.add(commentLabel, gbc);
+
+                gbc.gridx = 1;
+                gbc.gridy = 3;
+                registerFrame.add(commentText, gbc);
+
+                gbc.gridx = 1;
+                gbc.gridy = 4;
+                registerFrame.add(regSaveButton, gbc);
+
+                regSaveButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        String title = titleText.getText();
+                        String username = regUserText.getText();
+                        String password = regPasswordText.getText();
+                        String url = urlText.getText();
+                        String comment = commentText.getText();
+                        if (username.isEmpty() || password.isEmpty() || url.isEmpty() || comment.isEmpty()) {
+                            showMessage("Username, password, URL/application, and comment cannot be empty");
+                            return;
+                        }
                         try {
-                            String encryptedPassword = PasswordManager.searchPassword(title);
-                            if (encryptedPassword != null) {
-                                showPassword(encryptedPassword);
-                            } else {
-                                showMessage("Password not found");
+                            if (isUsernameTaken(username)) {
+                                showMessage("Username is already taken");
+                                return;
                             }
+                            register(username, password, url, comment);
+                            showMessage("User registered successfully!");
+                            registerFrame.setVisible(false);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                             showMessage("An error occurred");
@@ -129,7 +181,7 @@ public class LoginGUI {
                     }
                 });
 
-                searchFrame.setVisible(true);
+                registerFrame.setVisible(true);
             }
         });
 
@@ -175,64 +227,14 @@ public class LoginGUI {
     }
 
     /**
-     * Parodo užšifruotą ir dešifruotą slaptažodį
-     * @param encryptedPassword Užšifruotas slaptažodis
-     */
-    private static void showPassword(String encryptedPassword) {
-        Frame passwordFrame = new Frame("Password Found");
-        passwordFrame.setSize(400, 200);
-        passwordFrame.setLayout(new FlowLayout());
-
-        // Centruoja slaptažodžio langą
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        passwordFrame.setLocation(screenSize.width / 2 - passwordFrame.getSize().width / 2, screenSize.height / 2 - passwordFrame.getSize().height / 2);
-
-        Label encryptedPasswordLabel = new Label("Encrypted Password:");
-        TextField encryptedPasswordText = new TextField(encryptedPassword, 20);
-        encryptedPasswordText.setEditable(false);
-
-        Button decryptButton = new Button("Decrypt");
-        TextField decryptedPasswordText = new TextField(20);
-        decryptedPasswordText.setEditable(false);
-
-        Button copyButton = new Button("Copy to Clipboard");
-
-        decryptButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    String decryptedPassword = PasswordManager.decrypt(encryptedPassword);
-                    decryptedPasswordText.setText(decryptedPassword);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    showMessage("An error occurred during decryption");
-                }
-            }
-        });
-
-        copyButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                StringSelection stringSelection = new StringSelection(decryptedPasswordText.getText());
-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
-                showMessage("Password copied to clipboard");
-            }
-        });
-
-        passwordFrame.add(encryptedPasswordLabel);
-        passwordFrame.add(encryptedPasswordText);
-        passwordFrame.add(decryptButton);
-        passwordFrame.add(decryptedPasswordText);
-        passwordFrame.add(copyButton);
-
-        passwordFrame.setVisible(true);
-    }
-
-    /**
      * Registruoja naują vartotoją
      * @param username Vartotojo vardas
      * @param password Slaptažodis
+     * @param url URL ar aplikacija
+     * @param comment Komentaras
      * @throws Exception Jei įvyksta klaida šifravimo metu
      */
-    private static void register(String username, String password) throws Exception {
+    private static void register(String username, String password, String url, String comment) throws Exception {
         String encryptedPassword = encryptPassword(password);
 
         if (!new File(USER_FILE).exists()) {
@@ -240,7 +242,7 @@ public class LoginGUI {
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(USER_FILE, true))) {
-            writer.write(username + ":" + encryptedPassword);
+            writer.write(username + ":" + encryptedPassword + ":" + url + ":" + comment);
             writer.newLine();
         }
     }

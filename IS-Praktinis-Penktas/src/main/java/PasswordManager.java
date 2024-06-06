@@ -43,7 +43,7 @@ public class PasswordManager {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(":");
                 if (parts[0].equals(currentUser)) {
-                    writer.write(parts[0] + ":" + newPassword);
+                    writer.write(parts[0] + ":" + newPassword + ":" + parts[2] + ":" + parts[3]);
                     found = true;
                 } else {
                     writer.write(line);
@@ -120,6 +120,30 @@ public class PasswordManager {
                 String[] parts = line.split(":");
                 if (parts[0].equals(title)) {
                     return parts[1];
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Grąžina vartotojo duomenis.
+     * @param username Vartotojo vardas
+     * @return Vartotojo duomenys
+     * @throws Exception Jei įvyksta klaida skaitymo metu
+     */
+    public static String[] getUserDetails(String username) throws Exception {
+        File file = new File(PASSWORD_FILE);
+        if (!file.exists()) {
+            return null;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts[0].equals(username)) {
+                    return parts;
                 }
             }
         }
